@@ -5,61 +5,55 @@ import TodoList from './Components/TodoList';
 import TodoSearch from './Components/TodoSearch';
 import TodoItem from './Components/TodoItem';
 import TodoAdd from './Components/TodoAdd';
-import {TodoProvider, TodoContext} from './TodoContext'
+import { TodoProvider, TodoContext } from './TodoContext'
+import TodoHeaderMessage from './Components/TodoHeaderMessage';
+import Modal from './Components/TodoModal';
+import TodoForm from './Components/TodoForm';
 
 function App() {
-  var defaultTodos = [
-    {text: 'hola', completed: true},
-    {text: 'chao', completed: false},
-    {text: 'si', completed: true}
-  ]
 
-  // const {
-  //   error,
-  //   loading,
-  //   todosFiltred,
-  //   completeTodo,
-  //   deleteTodo,
-  // } = React.useContext(TodoContext)
-  
   return (
     <TodoProvider>
       <div className="app-wrapper">
         <div className="todo-machine">
-          <TodoCounter 
+          <TodoCounter
             className="todo-counter"
           />
-          <TodoSearch 
+          <TodoSearch
             className="todo-search"
           />
+
           <TodoContext.Consumer>
             {({
-              error,
-              loading,
               todosFiltred,
               completeTodo,
               deleteTodo,
+              openModal,
+              setOpenModal
             }) => (
-              <TodoList className="todo-list">
-              {error && <p>Hubo un error</p>}
-              {loading && <p>Estamos cargando</p>}
-              {(!loading && !todosFiltred.length) && <p>Crea tu primer todo!</p>}
-
-              {todosFiltred.map(todo => (
-                <TodoItem 
-                  className="todo-item"
-                  key={todo.text}
-                  todo={todo}
-                  onComplete={completeTodo}
-                  onDelete={deleteTodo}  
-                />
-              ))}
-            </TodoList>
+              <React.Fragment>
+                <TodoHeaderMessage todosListLength={todosFiltred.length} />
+                <TodoList className="todo-list">
+                  {todosFiltred.map( (todo,index) => (
+                    <TodoItem
+                      className="todo-item"
+                      key={index}
+                      todo={todo}
+                      onComplete={completeTodo}
+                      onDelete={deleteTodo}
+                    />
+                  ))}
+                </TodoList>
+                {openModal && (
+                  <Modal setOpenModal={setOpenModal}>
+                    <TodoForm setOpenModal={setOpenModal} />
+                  </Modal>
+                )}
+                <TodoAdd setOpenModal={setOpenModal} />
+              </React.Fragment>
             )}
           </TodoContext.Consumer>
-        
-          <TodoAdd></TodoAdd>
-        </div>    
+        </div>
       </div>
     </TodoProvider>
   );

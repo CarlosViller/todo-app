@@ -1,39 +1,42 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import useLocalStorage from './useLocalStorage';
 
 const TodoContext = React.createContext()
 
 function TodoProvider(props) {
-    
+
     const [searchValue, setSearchValue] = useState('');
-    const {item: todos, saveItem: saveTodos, loading, error} = useLocalStorage('TODOv1',[])
+    const { item: todos, saveItem: saveTodos, loading, error } = useLocalStorage('TODOSv1', [])
     const [todosFiltred, setTodosFiltred] = useState(todos)
-    const [prueba,a] = useState('hola')
+    const [openModal, setOpenModal] = useState(false)
 
-    //Ver porque se usa el useEfferct   
-    useEffect(()=> {
-        console.log('filtred')
-        searchValue 
-        ? setTodosFiltred(todos.filter(({text})=> text.toLowerCase().includes(searchValue.toLowerCase())))
-        : setTodosFiltred(todos)
-    },[searchValue])
+    useEffect(() => {
+        searchValue
+            ? setTodosFiltred(todos.filter(({ text }) => text.toLowerCase().includes(searchValue.toLowerCase())))
+            : setTodosFiltred(todos)
+    }, [searchValue, todos])
 
-    useEffect(() =>{
-        console.log(prueba)
-    },[prueba])
+    const addTodo = text => {
+        const newTodos = [...todos]
+        newTodos.push({
+            completed: false,
+            text: text
+        })
+        saveTodos(newTodos)
+    }
 
     const completeTodo = text => {
         const todoIndex = todos.findIndex(todo => todo.text === text)
         const newTodos = [...todos]
         newTodos[todoIndex].completed = true
-        saveTodos(newTodos) 
+        saveTodos(newTodos)
     }
 
-    const deleteTodo = text=> {
+    const deleteTodo = text => {
         const todoIndex = todos.findIndex(todo => todo.text === text)
         const newTodos = [...todos]
-        newTodos.splice(todoIndex,1)
-        saveTodos(newTodos) 
+        newTodos.splice(todoIndex, 1)
+        saveTodos(newTodos)
     }
 
     return (
@@ -44,13 +47,16 @@ function TodoProvider(props) {
             error,
             searchValue,
             setSearchValue,
+            addTodo,
             completeTodo,
             deleteTodo,
             todosFiltred,
+            openModal,
+            setOpenModal
         }}>
             {props.children}
         </TodoContext.Provider>
     )
 }
 
-export {TodoContext, TodoProvider}
+export { TodoContext, TodoProvider }

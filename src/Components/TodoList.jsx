@@ -1,13 +1,15 @@
 import React from 'react'
+import { TodoContext } from '../TodoContext'
 
 export default function TodoList(props) {
-    
-    var content = props.children
 
-    if(!props.children.length && props.searchValue) content = <p className="todo-not-found">No se encontraron tareas :(</p>
-    
+    var content = props.children
+    var { searchValue } = React.useContext(TodoContext)
+
+    if (!props.children.length && searchValue) content = <p className="todo-not-found">No se encontraron tareas :(</p>
+
     return (
-        <ul>
+        <ul className="todo-list">
             {content}
         </ul>
     )
